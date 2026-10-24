@@ -12,7 +12,18 @@ const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.inner
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+document.body.appendChild(renderer.domElement);
+
+// ── State permainan (FIX: sebelumnya tidak dideklarasikan) ──────────
+const state = {
+    foundCount: 0,      // jumlah lukisan yang sudah dibuka
+    hasKey: false,      // kunci sudah diambil
+    doorOpen: false,    // pintu sudah terbuka
+    chestOpened: false  // peti sudah dibuka
+};
+
+// Kode sandi = urutan angka lukisan idx 0,1,2 → '4','7','1'
+const PUZZLE_CODE = '471';
 
 // 10A — Environment Texture Loader with Fallback
 const texLoader = new THREE.TextureLoader();
