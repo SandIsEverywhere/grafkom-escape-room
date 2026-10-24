@@ -5,6 +5,7 @@ class FirstPersonController {
     constructor(camera, scene, domElement) {
         this.camera = camera;
         this.scene = scene;
+        this.domElement = domElement;
         this.model = null;
         this.mixer = null;
         this.animations = {};
@@ -16,8 +17,9 @@ class FirstPersonController {
         this.direction = new THREE.Vector3();
         this.speed = 5;
 
-        // offset eye level
+        // offset eye level & room boundaries
         this.eyeLevel = 1.6;
+        this.roomSize = 20;
 
         this.initControls(domElement);
         this.loadModel();
@@ -38,8 +40,8 @@ class FirstPersonController {
     }
 
     addEventListeners() {
-        this.domElement.addEventListener('keydown', (event) => this.onKeyDown(event));
-        this.domElement.addEventListener('keyup', (event) => this.onKeyUp(event));
+        window.addEventListener('keydown', (event) => this.onKeyDown(event));
+        window.addEventListener('keyup', (event) => this.onKeyUp(event));
     }
 
     onKeyDown(event) {
@@ -63,20 +65,18 @@ class FirstPersonController {
     update(delta) {
         if (!this.controls.isLocked) return;
 
-        // move logic
-        this.direction.z = Number(this.keys.w) - Number(this.keys.s);
-        this.direction.x = Number(this.keys.d) - Number(this.keys.a);
-        this.direction.normalize();
+        const speed = this.speed * delta;
 
-        // update velocity
-        this.velocity.x -= this.velocity.x * 10.0 * delta;
-        this.velocity.z -= this.velocity.z * 10.0 * delta;
+        if (this.keys['w']) this.controls.moveForward(speed);
+        if (this.keys['s']) this.controls.moveForward(-speed);
+        if (this.keys['a']) this.controls.moveRight(-speed);
+        if (this.keys['d']) this.controls.moveRight(speed);
 
-        if (this.keys.w || this.keys.s) this.velocity.z -= this.direction.z * this.speed * delta;
-        if (this.keys.a || this.keys.d) this.velocity.x -= this.direction.x * this.speed * delta;
-
-        this.controls.moveRight(-this.velocity.x * delta);
-        this.controls.moveForward(-this.velocity.z * delta);
+        // Clamp inside room boundaries
+        const b = this.roomSize / 2 - 0.5;
+        this.camera.position.x = Math.max(-b, Math.min(b, this.camera.position.x));
+        this.camera.position.z = Math.max(-b, Math.min(b, this.camera.position.z));
+        this.camera.position.y = this.eyeLevel;
     }
 }
 
