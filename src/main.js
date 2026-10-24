@@ -13,15 +13,33 @@ document.body.appendChild( renderer.domElement );
 const fpsController = new FirstPersonController( camera, scene, renderer.domElement );
 
 // ground
-const groundGeometry = new THREE.PlaneGeometry( 100, 100 );
+const groundGeometry = new THREE.PlaneGeometry( 20, 20 );
 const groundMaterial = new THREE.MeshBasicMaterial( { color: 0x808080, side: THREE.DoubleSide } );
 const ground = new THREE.Mesh( groundGeometry, groundMaterial );
 ground.rotation.x = Math.PI / 2;
 scene.add( ground );
 
+// walls
+const wallGeometry = new THREE.PlaneGeometry( 20, 20 );
+const wallMaterial = new THREE.MeshBasicMaterial( { color: 0xA0A0A0, side: THREE.DoubleSide } );
+const walls = new THREE.Group();
+const wall1 = new THREE.Mesh( wallGeometry, wallMaterial );
+wall1.position.z = -10;
+const wall2 = new THREE.Mesh( wallGeometry, wallMaterial );
+wall2.position.x = -10;
+wall2.rotation.y = Math.PI / 2;
+const wall3 = new THREE.Mesh( wallGeometry, wallMaterial );
+wall3.position.z = 10;
+const wall4 = new THREE.Mesh( wallGeometry, wallMaterial );
+wall4.position.x = 10;
+wall4.rotation.y = Math.PI / 2;
+walls.add(wall1, wall2, wall3, wall4);
+scene.add(walls);
+
 // Default Box
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+// const material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
 const cube = new THREE.Mesh( geometry, material );
 cube.position.y = 1; // Raise the cube above the ground
 scene.add( cube );
@@ -41,6 +59,9 @@ function animate(timestamp) {
 
     cube.rotation.x += delta;
     cube.rotation.y += delta;
+
+    // console player position
+    // console.log(`Player position: x=${camera.position.x.toFixed(2)}, y=${camera.position.y.toFixed(2)}, z=${camera.position.z.toFixed(2)}`);
 
     renderer.render( scene, camera );
 }
