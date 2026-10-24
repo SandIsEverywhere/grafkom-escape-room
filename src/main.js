@@ -1,8 +1,5 @@
 import * as THREE from 'three';
-// import "./style.css";
-// import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
-import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
-// import FirstPersonController from './FirstPersonController.js';
+import FirstPersonController from './FirstPersonController.js';
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0x0b1020 );
@@ -13,8 +10,7 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 // Trying Controls
-const fpsController = new PointerLockControls( camera, renderer.domElement );
-// const fpsController = new FirstPersonController(camera, scene, renderer.domElement);
+const fpsController = new FirstPersonController( camera, scene, renderer.domElement );
 
 // ground
 const groundGeometry = new THREE.PlaneGeometry( 100, 100 );
@@ -30,20 +26,6 @@ const cube = new THREE.Mesh( geometry, material );
 cube.position.y = 1; // Raise the cube above the ground
 scene.add( cube );
 
-renderer.domElement.addEventListener('click', () => {
-    fpsController.lock();
-});
-
-// trying movement (not working yet)
-renderer.domElement.addEventListener('keydown', (event) => {
-    switch (event.code) {
-        case 'KeyW': fpsController.moveForward(0.1); break;
-        case 'KeyA': fpsController.moveRight(-0.1); break;
-        case 'KeyS': fpsController.moveForward(-0.1); break;
-        case 'KeyD': fpsController.moveRight(0.1); break;
-    }
-});
-
 camera.position.z = 5;
 camera.position.y = 1.6;
 
@@ -54,11 +36,8 @@ function animate(timestamp) {
     timer.update(timestamp);
 
     const delta = timer.getDelta();
-    // const elapsed = timer.getElapsed();
     
-    // fpsController.update(delta);
-    // fpsController.lock();
-    // controls.update(delta);
+    fpsController.update(delta);
 
     cube.rotation.x += delta;
     cube.rotation.y += delta;
