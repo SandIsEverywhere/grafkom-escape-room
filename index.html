@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>App Project Uts</title>
+    <title>Escape Room 3D - UTS Grafkom</title>
     <link rel="stylesheet" href="./src/style.css">
     <script type="importmap">
         {
@@ -14,6 +14,42 @@
     </script>
   </head>
   <body>
+    <!-- Crosshair & Hints -->
+    <div id="crosshair"></div>
+    <div id="hint"></div>
+
+    <!-- HUD & Objectives -->
+    <div id="hud">
+      <ul class="objectives">
+        <li id="obj-paintings">Cari Petunjuk Lukisan (0/3)</li>
+        <li id="obj-key">Ambil Kunci di Peti</li>
+        <li id="obj-door">Buka Pintu dengan Kode</li>
+      </ul>
+      <div id="code-hint-display" class="hidden">Petunjuk Kode: _ _ _</div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden"></div>
+
+    <!-- Code Modal -->
+    <div id="code-modal" class="hidden">
+      <div class="modal-content">
+        <h3>🔒 Masukkan Sandi 3 Angka</h3>
+        <input type="text" id="code-input" maxlength="3" placeholder="---" autocomplete="off" />
+        <div class="modal-buttons">
+          <button id="submit-code">Buka</button>
+          <button id="cancel-code">Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Win Screen -->
+    <div id="win-screen" class="hidden">
+      <h1>🎉 SELAMAT!</h1>
+      <p>Anda berhasil keluar dari ruangan escape room!</p>
+      <button id="restart-btn">Main Lagi</button>
+    </div>
+
     <script type="module" src="./src/main.js"></script>
   </body>
 </html>
