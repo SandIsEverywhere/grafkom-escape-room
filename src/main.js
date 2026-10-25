@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import FirstPersonController from './FirstPersonController.js';
+import GameStateManager from './GameStateManager.js';
 import Room from './Room.js';
 import RoomObjects from './RoomObjects.js';
 import SolarSystem from './Orbit.js';
@@ -15,6 +16,7 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild(renderer.domElement);
 
 // ── State permainan (FIX: sebelumnya tidak dideklarasikan) ──────────
+// Working on: WorldStateManager
 const state = {
     foundCount: 0,      // jumlah lukisan yang sudah dibuka
     hasKey: false,      // kunci sudah diambil
