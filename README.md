@@ -5,7 +5,7 @@
 ## 👥 Anggota Kelompok
 
 | Name           | NRP        | Kelas     | Kontribusi Utama |
-| ---            | ---        | ----------|
+| ---            | ---        | ----------| ---              |
 | Joaquin Fairuz Nawfal Ismono | 5025241106 | B | Lighting, Shadow, Raycasting, VFX, UI/HUD, Integration, Animation |
 | Hasan Abdurrahman | 5025241114 | B | Scene, Camera, Game State, Puzzle, PBR, Interaction |
 
