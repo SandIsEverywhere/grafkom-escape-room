@@ -45,7 +45,7 @@ Game ini mengintegrasikan materi Pertemuan 1–7, meliputi:
 Keluar dari ruangan dengan membuka pintu menggunakan kode tiga digit yang diperoleh dari petunjuk pada lukisan dan kunci dari peti.
 
 ### 🏁 Completion State
-Pemain dinyatakan menang ketika pintu berhasil dibuka dan animasi pembukaan pintu selesai.
+Pemain dinyatakan menang setelah kode benar, animasi pintu selesai, dan pemain berjalan melewati pintu.
 *Tidak terdapat lose state karena game berfokus pada eksplorasi dan pemecahan teka-teki (Interactive Puzzle Game).*
 
 ---
@@ -55,41 +55,23 @@ Pemain dinyatakan menang ketika pintu berhasil dibuka dan animasi pembukaan pint
 ### Prasyarat
 - Browser modern: Chrome 90+, Firefox 88+, Edge 90+, atau Safari 15+.
 - Koneksi internet untuk memuat Three.js melalui CDN dan import map.
-- Python 3 atau Node.js untuk menjalankan local server (opsional, tetapi direkomendasikan).
+- Python 3 atau Node.js untuk menjalankan server lokal. Karena proyek menggunakan ES modules, server lokal diperlukan; membuka `index.html` langsung melalui `file://` tidak didukung secara konsisten.
 
-### Cara 1 — Menggunakan Live Server (Direkomendasikan)
-Jalankan perintah berikut di direktori proyek.
+### Menjalankan server lokal
+Jalankan salah satu perintah berikut dari direktori proyek:
 
 Menggunakan Python 3:
 ```bash
 python -m http.server 8000
 ```
-Alternatif menggunakan Node.js:
+Alternatif jika paket `serve` tersedia melalui `npx`:
 ```bash
 npx serve .
 ```
-Setelah server berjalan, buka alamat berikut di browser:
+Setelah server berjalan, buka alamat yang ditampilkan oleh server (untuk Python):
 ```text
 http://localhost:8000
 ```
-
-### Cara 2 — Membuka Langsung
-Buka file `index.html` menggunakan browser.
-> ⚠️ **Peringatan:** Beberapa browser, termasuk Chrome, dapat memblokir ES modules ketika halaman dibuka melalui protokol `file://`. Gunakan local server jika game tidak berjalan dengan benar.
-
-### Cara 3 — Menggunakan Vite
-Untuk menjalankan proyek melalui development server Vite:
-```bash
-npm create vite@latest escape-room -- --template vanilla
-cd escape-room
-npm install
-npm install three
-```
-Salin file proyek ke direktori yang sesuai, lalu jalankan:
-```bash
-npm run dev
-```
-> *Catatan: Konfigurasi Vite mungkin memerlukan penyesuaian struktur file dan import apabila proyek awal menggunakan import map CDN.*
 
 ---
 
@@ -97,14 +79,15 @@ npm run dev
 
 | Input | Aksi |
 | :--- | :--- |
+| Klik pada area game | Mengaktifkan Pointer Lock untuk memulai atau melanjutkan permainan |
 | `W`, `A`, `S`, `D` | Bergerak maju, kiri, mundur, dan kanan |
-| `↑`, `↓`, `←`, `→` | Alternatif kontrol pergerakan |
-| *Drag mouse* | Memutar kamera untuk melihat sekeliling |
-| *Klik kiri* | Berinteraksi dengan objek yang ditunjuk crosshair |
-| `Enter` | Mengirim kode ketika modal kode terbuka |
-| *Klik tombol Batal* | Menutup modal kode |
+| Gerakkan mouse saat Pointer Lock aktif | Memutar kamera untuk melihat sekeliling |
+| Klik kiri saat Pointer Lock aktif | Berinteraksi dengan objek di tengah crosshair |
+| `Esc` | Melepaskan Pointer Lock dan menjeda permainan; klik area game untuk melanjutkan |
+| `Enter` atau tombol **Buka** | Mengirim kode saat modal kode terbuka |
+| Tombol **Batal** | Menutup modal kode |
 
-> 💡 **Tips:** Arahkan crosshair ke objek interaktif hingga berubah menjadi kuning. Perubahan warna tersebut menandakan bahwa objek dapat diinteraksikan.
+> 💡 **Tips:** Arahkan crosshair ke objek interaktif hingga berubah menjadi kuning dan petunjuk muncul. Ketiga puzzle harus diselesaikan untuk membuka angka pada lukisan; kunci dari peti diperlukan untuk mencoba membuka pintu.
 
 ---
 
@@ -114,31 +97,31 @@ npm run dev
 START
   │
   ▼
-Jelajahi ruangan menggunakan WASD dan drag mouse
+Klik area game untuk mengunci pointer, lalu jelajahi ruangan menggunakan WASD dan mouse
   │
   ▼
-Temukan dan klik 3 lukisan petunjuk
+Selesaikan puzzle planet, Simon, dan gerhana di dekat lukisan
   │
   ▼
-Angka petunjuk muncul di HUD: _ _ _
+Angka pada ketiga lukisan terbuka dan petunjuk kode diperbarui di HUD
   │
   ▼
-Buka peti
+Klik peti untuk membukanya
   │
   ├── Animasi peti terbuka
   └── Efek sparkles muncul
   │
   ▼
-Kunci diambil secara otomatis
+Kunci muncul dan dikumpulkan otomatis setelah jeda singkat
   │
   ▼
-Klik pintu untuk membuka modal kode
+Klik pintu untuk membuka modal kode (setelah kunci didapat)
   │
   ▼
 Masukkan kode 471
   │
   ▼
-Pintu terbuka dengan animasi
+Pintu terbuka dengan animasi; berjalan melewati pintu untuk menang
   │
   ▼
 WIN SCREEN ✨
@@ -147,10 +130,13 @@ WIN SCREEN ✨
 ### Detail Puzzle
 | Elemen | Nilai |
 | :--- | :--- |
-| Jumlah lukisan | 3 |
-| Angka petunjuk | 4, 7, 1 |
-| Kode pintu | 471 |
-| Syarat membuka pintu | Ketiga lukisan ditemukan dan kunci diperoleh |
+| Puzzle planet | Tukar posisi 8 planet hingga urut dari Merkurius sampai Neptunus; membuka angka `4` |
+| Puzzle Simon | Ulangi urutan 4 tombol berwarna hingga 4 ronde selesai; urutan setiap permainan dibuat acak dan membuka angka `7` |
+| Puzzle gerhana | Klik sistem orbit saat Bulan berada di antara Matahari dan Bumi; membuka angka `1` |
+| Kode pintu | `471` |
+| Syarat membuka modal kode | Kunci didapat dari peti; puzzle tidak diwajibkan oleh logika pintu |
+| Syarat membuka pintu | Masukkan kode `471` dengan benar |
+| Kondisi menang | Pintu terbuka dan pemain berjalan melewati pintu |
 
 ---
 
@@ -161,14 +147,14 @@ WIN SCREEN ✨
 | :---: | :--- | :---: | :--- |
 | 1 | Scene 3D, camera, dan renderer | ✅ | Room, PerspectiveCamera, WebGLRenderer |
 | 2 | Ground, arena, dan environment | ✅ | Floor, walls, ceiling, fog, environment map |
-| 3 | Minimal 3 jenis objek | ✅ | Lukisan, peti, pintu, kunci, dan artefak |
-| 4 | Scene graph hierarchy | ✅ | Door hinge, chest lid, painting group |
+| 3 | Minimal 3 jenis objek | ✅ | Lukisan, peti, pintu, kunci, dan 3 puzzle |
+| 4 | Scene graph hierarchy | ✅ | Door hinge, chest lid, painting group, puzzle |
 | 5 | Minimal 1 aset GLTF/GLB | ✅ | `models/model.glb` dengan fallback prosedural |
 | 6 | Material PBR | ✅ | Material berbasis `MeshStandardMaterial` |
-| 7 | Lighting | ✅ | Ambient, Hemisphere, Point, dan Directional Light |
+| 7 | Lighting | ✅ | Ambient, Point, dan Directional Light |
 | 8 | Shadow casting dan receiving | ✅ | Peti/pintu melakukan cast shadow; floor/walls menerima shadow |
 | 9 | Environment | ✅ | Equirectangular environment map dan FogExp2 |
-| 10 | Minimal 2 jenis animasi | ✅ | Enam animasi |
+| 10 | Minimal 2 jenis animasi | ✅ | Tutup peti, pintu, kunci, sistem orbit gerhana, lukisan, partikel, dan perubahan cahaya |
 | 11 | Minimal 3 interaksi | ✅ | Klik lukisan, klik peti, klik pintu, dan pergerakan pemain |
 | 12 | `THREE.Raycaster` | ✅ | Hover detection dan click interaction |
 | 13 | Minimal 2 VFX | ✅ | Dust particles dan key sparkles |
@@ -178,12 +164,13 @@ WIN SCREEN ✨
 ### 2. Animasi
 | No. | Animasi | Tipe |
 | :---: | :--- | :--- |
-| 1 | Torch flicker melalui perubahan intensitas cahaya | Procedural animation |
+| 1 | Sistem Matahari, Bumi, dan Bulan berorbit | Object animation |
 | 2 | Dust particles bergerak naik | VFX animation |
-| 3 | Chest lid terbuka | Transform animation |
-| 4 | Key melayang dan berotasi | Object animation |
-| 5 | Door terbuka melalui rotasi hinge | Transform animation |
-| 6 | Painting sway dan emissive pulse | Procedural animation |
+| 3 | Tutup peti terbuka pada pivot engsel | Transform animation |
+| 4 | Kunci melayang dan berotasi sebelum dikumpulkan | Object animation |
+| 5 | Pintu terbuka melalui rotasi hinge | Transform animation |
+| 6 | Lukisan bergoyang dan mengalami emissive pulse | Procedural animation |
+| 7 | Point light berkedip; warnanya berubah saat pintu terbuka | Lighting animation |
 
 ### 3. Visual Effects (VFX)
 | No. | Efek | Teknik |
@@ -191,15 +178,18 @@ WIN SCREEN ✨
 | 1 | Dust particles (180 titik) | `THREE.Points` + AdditiveBlending |
 | 2 | Key sparkles (50 titik) | `THREE.Points` dengan rotasi dan gerakan naik |
 | 3 | Emissive pulse | Perubahan dinamis `material.emissiveIntensity` |
-| 4 | Hover glow | Transisi CSS pada crosshair |
+| 4 | Point light flicker dan perubahan warna saat pintu terbuka | Perubahan dinamis intensitas dan warna cahaya |
+| 5 | Hover indicator | Perubahan tampilan crosshair melalui class CSS |
 
 ### 4. Interaction & Raycasting
 | Interaksi | Trigger | Respons |
 | :--- | :--- | :--- |
 | **Hover objek** | Raycast setiap frame | Crosshair berubah kuning dan hint teks muncul |
-| **Klik lukisan** | Klik kiri pada objek | Angka muncul, toast ditampilkan, HUD diperbarui |
+| **Puzzle planet** | Klik dua planet secara berurutan | Posisi kedua planet ditukar; urutan benar membuka petunjuk |
+| **Puzzle Simon** | Klik tombol untuk memulai, lalu masukkan urutan | Urutan cahaya bertambah per ronde; empat ronde benar membuka petunjuk |
+| **Puzzle gerhana** | Klik sistem orbit saat posisi Bulan tepat | Jika sejajar, petunjuk terbuka; jika tidak, orbit berlanjut |
 | **Klik peti** | Klik kiri pada objek | Animasi peti terbuka dan kunci muncul |
-| **Klik pintu** | Klik kiri pada objek | Validasi persyaratan dan modal kode |
+| **Klik pintu** | Klik kiri pada objek | Jika kunci sudah didapat, modal kode dibuka |
 | **Submit kode** | Enter atau tombol submit | Kode divalidasi; pintu terbuka atau pesan error muncul |
 
 ---
@@ -207,29 +197,44 @@ WIN SCREEN ✨
 ## 🗂️ Struktur Proyek
 
 ```text
-praktikum-uts/
+grafkom-escape-room/
 │
 ├── index.html                 # Entry point dan import map CDN
 ├── README.md                  # Dokumentasi proyek
 │
 ├── src/
-│   ├── main.js                # Game coordinator & loop
-│   ├── Room.js                # Kelas ruangan, lantai, atap, dinding, & lighting
-│   ├── RoomObjects.js         # Kelas objek statis (Pintu, Peti, Lukisan, Kunci)
-│   ├── RoomVFX.js             # Kelas partikel debu & sparkles
+│   ├── main.js
+│   ├── FirstPersonController.js
+│   ├── GameStateManager.js
+│   ├── Room.js
+│   ├── RoomObjects.js
+│   ├── RoomVFX.js
+│   ├── WorldState.js
+│   ├── style.css
 │   ├── puzzles/
-│   │   ├── PlanetaryOrderPuzzle.js
-│   │   ├── SimonPuzzle.js
 │   │   ├── EclipsePuzzle.js
-│   │   └── Orbit.js           # Komponen orbit untuk puzzle gerhana
-│   ├── FirstPersonController.js # Kontrol kamera FPS & WASD
-│   └── style.css              # Styling HUD, modal, toast, dan win screen
+│   │   ├── Orbit.js
+│   │   ├── Planet.js
+│   │   ├── PlanetaryOrderPuzzle.js
+│   │   ├── SimonButton.js
+│   │   └── SimonPuzzle.js
 │
+├── environment/
+│   └── environment.jpg
 ├── models/
-│   └── model.glb              # (Opsional) model dekorasi
+│   └── model.glb
 │
-└── environment/
-    └── environment.jpg        # (Opsional) environment map
+├── textures/
+│   ├── mercury.jpg
+│   ├── venus.jpg
+│   ├── earth.jpg
+│   ├── mars.jpg
+│   ├── jupiter.jpg
+│   ├── saturn.jpg
+│   ├── saturn_ring.png
+│   ├── uranus.jpg
+│   ├── neptune.jpg
+│   └── venus_atmosphere.jpg
 ```
 
 ### Penjelasan File
@@ -238,18 +243,23 @@ praktikum-uts/
 | `index.html` | Struktur HTML, HUD, dan import map Three.js |
 | `src/main.js` | Game coordinator, state machine, raycasting, dan loop animasi |
 | `src/Room.js` | Kelas OOP untuk membangun ruangan, lantai, langit-langit, dan pencahayaan |
-| `src/RoomObjects.js` | Kelas OOP untuk objek ruangan; lukisan menampilkan petunjuk setelah puzzle terkait selesai |
+| `src/RoomObjects.js` | Membuat pintu, peti, kunci, artefak GLB/fallback, dan lukisan petunjuk |
 | `src/RoomVFX.js` | Kelas OOP untuk efek partikel debu dan sparkles |
+| `src/puzzles/Planet.js` | Komponen planet untuk puzzle urutan |
 | `src/puzzles/PlanetaryOrderPuzzle.js` | Menyusun planet dengan menukar posisinya |
-| `src/puzzles/SimonPuzzle.js` | Mengulang urutan tombol bercahaya |
-| `src/puzzles/EclipsePuzzle.js` | Menghentikan orbit saat Bulan berada di antara Matahari dan Bumi |
-| `src/puzzles/Orbit.js` | Komponen orbit yang dipakai puzzle gerhana |
+| `src/puzzles/SimonButton.js` | Komponen tombol bercahaya untuk puzzle Simon |
+| `src/puzzles/SimonPuzzle.js` | Mengulang urutan tombol dalam empat ronde |
+| `src/puzzles/EclipsePuzzle.js` | Puzzle keselarasan Matahari, Bumi, dan Bulan |
+| `src/puzzles/Orbit.js` | Komponen orbit untuk puzzle gerhana |
 | `src/FirstPersonController.js` | Kelas OOP untuk kontrol kamera FPS, PointerLock, dan pergerakan WASD |
+| `src/GameStateManager.js` | Mengelola status permainan dan perubahan status |
+| `src/WorldState.js` | Menyimpan status puzzle, kunci, pintu, dan kemenangan |
 | `src/style.css` | Styling HUD, crosshair, modal, toast, dan win screen |
-| `models/model.glb` | Aset GLTF/GLB opsional; fallback tersedia |
-| `environment/environment.jpg`| Environment map opsional; fallback warna dan fog tersedia |
+| `textures/` | Tekstur permukaan planet yang digunakan puzzle urutan |
+| `models/model.glb` | Aset GLTF/GLB; fallback prosedural digunakan jika pemuatan gagal |
+| `environment/environment.jpg` | Environment map; fallback warna dan fog digunakan jika pemuatan gagal |
 
-> 💡 **Fallback visual:** Proyek dirancang agar tetap berjalan tanpa `models/model.glb` dan `environment/environment.jpg`, selama mekanisme fallback yang dijelaskan telah diimplementasikan dengan benar. Kedua file tersebut dapat dihilangkan jika tidak digunakan.
+> 💡 **Fallback visual:** Jika `models/model.glb` gagal dimuat, proyek membuat pedestal dan artefak prosedural. Jika `environment/environment.jpg` gagal dimuat, proyek menggunakan warna latar dan fog. Tekstur planet di `textures/` digunakan langsung oleh puzzle planet.
 
 ---
 
@@ -259,12 +269,12 @@ praktikum-uts/
 | Kategori | Teknologi |
 | :--- | :--- |
 | Bahasa pemrograman | JavaScript (ES Modules) |
-| Library 3D | Three.js v0.160 |
+| Library 3D | Three.js v0.186.1 |
 | Loader | GLTFLoader, TextureLoader |
 | Modul dan dependency | Import map melalui CDN, tanpa proses build |
-| Styling | CSS3, custom properties, Flexbox, dan CSS animation |
+| Styling | CSS3, Flexbox, transisi, dan animasi CSS |
 
-Ruangan menggunakan material yang merespons pencahayaan dan menyediakan tekstur opsional untuk dinding serta lantai. Secara default tekstur dinonaktifkan (`null`), sehingga warna datar tetap digunakan. Untuk mengaktifkan tekstur, berikan path pada opsi `wallTexture` atau `floorTexture` saat membuat `Room`.
+Tekstur dinding dan lantai saat ini dinonaktifkan (`null`) ketika `Room` dibuat, sehingga material menggunakan warna datar. `Room` mendukung opsi `wallTexture` dan `floorTexture` jika ingin mengaktifkannya.
 
 ### 2. Scene Graph
 Struktur scene graph berikut menggambarkan hubungan parent-child pada objek utama.
@@ -273,37 +283,45 @@ Struktur scene graph berikut menggambarkan hubungan parent-child pada objek utam
 Scene
 ├── Lights
 │   ├── AmbientLight
-│   ├── HemisphereLight
-│   ├── PointLight (torch) — cast shadow
-│   └── DirectionalLight — cast shadow
+│   ├── DirectionalLight — cast shadow
+│   ├── Ceiling PointLight — cast shadow
+│   ├── Torch PointLight — flicker dan berubah warna
+│   └── Window DirectionalLight
 │
 ├── Room
 │   ├── Floor — receive shadow
-│   ├── Ceiling
-│   └── Walls — 5 meshes dengan celah pintu
+│   ├── Ceiling — receive shadow
+│   ├── Four walls — dinding selatan memiliki bukaan jendela
+│   └── Window frame and glass
 │
 ├── DoorGroup — interactable
-│   ├── DoorPanel — cast shadow
-│   ├── Handle
-│   └── DoorLock
+│   ├── DoorPivot
+│   │   ├── DoorPanel — cast and receive shadow
+│   │   ├── Handle
+│   │   └── DoorLock
+│   └── Alcove side walls
 │
 ├── ChestGroup — interactable
-│   ├── ChestBase — cast shadow
+│   ├── ChestBase
 │   ├── ChestTrim
-│   ├── LidHinge — pivot di belakang peti
-│   │   ├── Lid — cast shadow
+│   ├── LidHinge
+│   │   ├── Lid
 │   │   └── LidTrim
 │   └── ChestLock
 │
-├── KeyGroup — tersembunyi hingga peti dibuka
+├── KeyGroup — hidden until chest opens
 │   ├── KeyRing
 │   ├── KeyShaft
-│   ├── KeyTooth1
-│   └── KeyTooth2
+│   └── KeyTeeth
 │
-├── Paintings[3] — interactable
-│   ├── Frame — cast shadow
-│   └── CanvasMesh — CanvasTexture angka
+├── Paintings — CanvasTexture clue numbers
+│
+├── Three interactable puzzles
+│   ├── Planet order
+│   ├── Simon sequence
+│   └── Eclipse alignment
+│
+├── GLB artifact or procedural fallback
 │
 └── VFX
     ├── Dust — 180 particles
@@ -311,24 +329,7 @@ Scene
 ```
 
 ### 3. Raycasting Flow
-Raycasting digunakan untuk mendeteksi objek yang berada di tengah pandangan pemain.
-Contoh alur implementasi:
-
-```javascript
-// Setiap frame, arahkan raycaster dari tengah layar.
-raycaster.setFromCamera(screenCenter, camera);
-
-const hits = raycaster.intersectObjects(interactables, true);
-
-// Cari root object melalui parent hierarchy.
-for (const hit of hits) {
-  const root = getInteractableRoot(hit.object);
-
-  if (root) {
-    return root; // door, chest, atau puzzle
-  }
-}
-```
+Raycaster diarahkan dari tengah kamera untuk mendeteksi objek interaktif dan menampilkan hover hint. Klik hanya diproses saat permainan aktif, Pointer Lock terkunci, dan gerakan mouse antara `mousedown` dan `mouseup` kurang dari 6 px. Klik pada objek puzzle diteruskan ke handler puzzle yang sesuai.
 
 **Syarat interaksi klik:**
 - Jarak drag mouse kurang dari 6px, sehingga gerakan kamera tidak dianggap sebagai klik.
@@ -336,58 +337,44 @@ for (const hit of hits) {
 - Crosshair menunjuk objek yang dapat diinteraksikan.
 
 ### 4. State Machine
-State utama permainan:
+Status permainan yang dikelola `GameStateManager`:
 ```javascript
-hasKey = false;
-chestOpened = false;
-doorOpen = false;
-foundCount = 0;
+playing
+paused
+code-entry
+won
 ```
 
-**Alur perubahan state:**
+Status dunia meliputi `chestOpen`, `hasKey`, `doorOpen`, `gameWon`, jumlah lukisan yang ditemukan, dan status tiap puzzle.
+
+**Alur permainan:**
 ```text
 START
   │
-  ├── Klik lukisan yang belum ditemukan
-  │     └── foundCount bertambah
+  ├── Selesaikan puzzle planet, Simon, dan gerhana
+  │     └── Angka petunjuk masing-masing lukisan ditampilkan
   │
   ├── Klik peti
-  │     └── chestOpened = true
-  │           └── Kunci diambil otomatis
-  │                 └── hasKey = true
+  │     └── Peti terbuka; setelah 1,6 detik kunci dikumpulkan otomatis
   │
   └── Klik pintu
-        │
-        ├── foundCount < 3
-        │     └── Toast error
-        │
-        ├── !hasKey
-        │     └── Toast error
-        │
-        └── Semua persyaratan terpenuhi
-              │
-              └── Modal kode ditampilkan
-                    │
-                    ├── Kode salah
-                    │     └── Toast error dan coba lagi
-                    │
-                    └── Kode benar
-                          └── doorOpen = true
-                                └── Animasi pintu
-                                      └── WIN SCREEN
+        ├── Belum punya kunci → toast; tidak membuka modal
+        └── Punya kunci → masukkan kode 471
+              ├── Kode salah → toast dan coba lagi
+              └── Kode benar → pintu terbuka
+                    └── Berjalan melewati pintu → win screen
 ```
 
-### 5. Catatan Performa
-| Parameter | Nilai | Tujuan |
-| :--- | :--- | :--- |
-| Shadow map size | 1024 × 1024 | Menyeimbangkan kualitas dan performa |
-| Dust particles | 180 | Memberikan efek atmosfer tanpa beban berlebihan |
-| Sparkle particles | 50 | Efek visual lokal di sekitar kunci |
-| Total draw calls | Target < 40 | Mengurangi overhead rendering |
-| Pixel ratio cap | 2 | Membatasi over-render pada layar beresolusi tinggi |
-| Fog density | 0.055 | Mengurangi visibilitas objek jauh dan memperkuat atmosfer |
+Puzzle membuka petunjuk kode, tetapi jumlah puzzle yang selesai tidak diperiksa oleh pintu. Kunci merupakan prasyarat untuk membuka modal kode; kode `471` yang benar tetap diperlukan untuk membuka pintu.
 
-> *Catatan: Nilai performa di atas merupakan konfigurasi atau target yang didokumentasikan. Hasil aktual bergantung pada implementasi, perangkat, browser, dan pengaturan renderer.*
+### 5. Parameter yang dikonfigurasi
+| Parameter | Nilai |
+| :--- | :--- |
+| Shadow map size | 1024 × 1024 |
+| Partikel debu | 180 |
+| Partikel sparkles | 50 |
+| Ukuran ruangan | 20 × 20 unit, tinggi 5.5 unit |
+| Fog fallback | `FogExp2` dengan density `0.02` (hanya jika environment map gagal dimuat) |
 
 ---
 
@@ -397,20 +384,11 @@ Proyek ini dikembangkan dari awal dan tidak menggunakan template atau fork proye
 | Aset | Pembuat | Sumber | Lisensi |
 | :--- | :--- | :--- | :--- |
 | Three.js | Three.js Contributors | [threejs.org](https://threejs.org/) | MIT |
-| Environment HDR | Octavian Tudose | [Poly Haven](https://polyhaven.com/a/kloppenheim_02_puresky) | CC0 |
+| Environment map JPEG | Octavian Tudose | [Poly Haven](https://polyhaven.com/a/kloppenheim_02_puresky) | CC0 |
 | Model GLB | Innerscene — original model | [Inner Scene](https://www.innerscene.com/tools/library/3d-parts/voyage-campaign-chest-1d609eb1) | CC0 |
 | Planet Texture | solarsystemscope | [solarsystemscope](https://www.solarsystemscope.com/textures/) | CC BY |
 
-> ⚠️ **Perhatian:** Jika menggunakan `environment/environment.jpg` atau `models/model.glb`, cantumkan kredit lengkap berupa nama aset, pembuat, sumber, dan lisensi pada tabel di atas.
-
-**Rekomendasi Sumber Aset Gratis:**
-| Jenis Aset | Sumber | Lisensi Umum |
-| :--- | :--- | :--- |
-| HDR Environment | [Poly Haven](https://polyhaven.com/) | CC0 |
-| Model 3D | [Sketchfab](https://sketchfab.com/) *(gunakan filter lisensi)* | Bervariasi (CC0, CC BY) |
-| Texture | [ambientCG](https://ambientcg.com/) | CC0, CC BY |
-
-> *Penting: Periksa lisensi setiap aset secara individual sebelum digunakan dan cantumkan atribusi sesuai ketentuannya.*
+> *Catatan: Tabel ini mempertahankan atribusi aset yang dicantumkan untuk proyek. Periksa lisensi dan ketentuan atribusi dari sumber masing-masing sebelum mendistribusikan aset.*
 
 ---
 
@@ -418,13 +396,10 @@ Proyek ini dikembangkan dari awal dan tidak menggunakan template atau fork proye
 
 | No. | Kendala | Solusi |
 | :---: | :--- | :--- |
-| 1 | Shadow berkedip (*shadow acne*) | Mengatur `shadow.bias = -0.0005`. |
-| 2 | Hover tidak stabil saat pemain bergerak | Melakukan raycast dari tengah crosshair, bukan dari posisi mouse. |
-| 3 | Chest lid tidak dapat dibuka dengan benar | Memisahkan hinge group dan menempatkan pivot di belakang peti. |
-| 4 | `environment.jpg` tidak tersedia | Menggunakan fallback warna solid dan fog. |
-| 5 | `model.glb` tidak tersedia | Menggunakan fallback pedestal dan icosahedron prosedural. |
-| 6 | Rotasi kamera terlalu sensitif | Mengalikan input mouse dengan 0.004 dan membatasi pitch. |
-| 7 | Pemain dapat menembus dinding | Membatasi posisi X/Z setiap frame. |
-| 8 | Asset atau texture diblokir melalui `file://` | Menjalankan proyek menggunakan local server. |
+| 1 | `environment/environment.jpg` gagal dimuat | Latar beralih ke warna solid dan fog. |
+| 2 | `models/model.glb` gagal dimuat | Pedestal dan icosahedron prosedural ditampilkan sebagai fallback. |
+| 3 | Gerakan mouse tidak sengaja memicu interaksi | Interaksi klik hanya diterima jika jarak drag kurang dari 6 px. |
+| 4 | Kamera pemain melewati batas ruangan | Posisi X dan Z kamera dibatasi berdasarkan ukuran ruangan; tidak ada collision detection terhadap objek. |
+| 5 | ES modules atau asset tidak dapat dimuat melalui `file://` | Jalankan proyek menggunakan server lokal. |
 
 ---
