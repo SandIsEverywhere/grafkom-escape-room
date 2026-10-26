@@ -54,6 +54,9 @@ const solarSystem = new SolarSystem(scene);
 const fpsController = new FirstPersonController( camera, scene, renderer.domElement );
 fpsController.roomSize = room.size;
 
+// game state manager
+const gameState = new GameStateManager();
+
 // Raycaster & Interaction setup (Phase 5 & 6)
 const raycaster = new THREE.Raycaster();
 const screenCenter = new THREE.Vector2(0, 0);
@@ -69,6 +72,37 @@ const codeInput = document.getElementById('code-input');
 const codeHintDisplay = document.getElementById('code-hint-display');
 const winScreen = document.getElementById('win-screen');
 
+gameState.onChange((newState) => {
+    if (newState === 'playing') {
+        fpsController.enable();
+    } else {
+        fpsController.disable();
+    }
+
+    crosshairEl.classList.remove('active');
+    hintEl.textContent = '';
+    codeModal.classList.toggle('hidden', newState !== 'code-entry');
+
+    if (newState === 'won') {
+        winScreen.classList.remove('hidden');
+        showToast('🏆 Anda berhasil keluar ruangan!');
+    }
+});
+
+fpsController.controls.addEventListener('unlock', () => {
+    if (gameState.getState() === 'playing') {
+        gameState.setState('paused');
+    }
+});
+
+renderer.domElement.addEventListener('click', () => {
+    if (gameState.getState() === 'paused') {
+        gameState.setState('playing');
+    }
+});
+
+gameState.setState('paused');
+
 // Toast helper function
 let toastTimer = null;
 function showToast(msg) {
@@ -78,10 +112,6 @@ function showToast(msg) {
     toastTimer = setTimeout(() => {
         toastEl.classList.add('hidden');
     }, 2500);
-}
-
-function isPaused() {
-    return !codeModal.classList.contains('hidden') || !winScreen.classList.contains('hidden');
 }
 
 // HUD update helper (Phase 9C)
@@ -173,19 +203,16 @@ function tryOpenDoor() {
         return;
     }
     // Show password modal (Phase 9C)
-    codeModal.classList.remove('hidden');
+    gameState.setState('code-entry');
     codeInput.value = '';
     codeInput.focus();
-    if (document.pointerLockElement) {
-        document.exitPointerLock();
-    }
 }
 
 function attemptDoorCode() {
     const val = codeInput.value;
     if (val === PUZZLE_CODE) {
         worldState.doorOpen = true;
-        codeModal.classList.add('hidden');
+        gameState.setState('paused');
         showToast('🎉 Kode benar! Pintu terbuka. Silakan jalan keluar!');
     } else {
         showToast('❌ Kode salah!');
@@ -215,7 +242,7 @@ window.addEventListener('mousedown', (e) => {
 
 window.addEventListener('mouseup', (e) => {
     const dragDist = Math.hypot(e.clientX - downX, e.clientY - downY);
-    if (dragDist < 6 && !isPaused() && fpsController.controls.isLocked) {
+    if (dragDist < 6 && gameState.getState() === 'playing' && fpsController.controls.isLocked) {
         handleInteract(hovered);
     }
 });
@@ -223,7 +250,7 @@ window.addEventListener('mouseup', (e) => {
 // Modal wiring (Phase 9C)
 document.getElementById('submit-code').addEventListener('click', attemptDoorCode);
 document.getElementById('cancel-code').addEventListener('click', () => {
-    codeModal.classList.add('hidden');
+    gameState.setState('paused');
 });
 codeInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -278,7 +305,7 @@ function animate(timestamp) {
     fpsController.update(delta);
 
     // Phase 5: Raycasting & Hover detection
-    if (!isPaused()) {
+    if (gameState.getState() === 'playing') {
         hovered = detectHover();
         if (hovered) {
             crosshairEl.classList.add('active');
@@ -321,9 +348,9 @@ function animate(timestamp) {
     // Cek posisi pemain (kamera) melewati pintu atau belum (jika pintu sudah terbuka)
     if (worldState.doorOpen && doorProgress >= 1) {
         if (camera.position.z < -8.0 && camera.position.x > -2.2 && camera.position.x < 0.2) {
-            if (winScreen.classList.contains('hidden')) {
-                winScreen.classList.remove('hidden');
-                showToast('🏆 Anda berhasil keluar ruangan!');
+            if (gameState.getState() !== 'won') {
+                worldState.gameWon = true;
+                gameState.setState('won');
             }
         }
     }

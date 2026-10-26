@@ -1,6 +1,6 @@
 class GameStateManager {
     constructor() {
-        this.state = 'menu';
+        this.state = 'playing';
         this.listeners = new Set();
     }
 
@@ -19,7 +19,7 @@ class GameStateManager {
         }
     }
 
-    subscribe(listener) {
+    onChange(listener) {
         this.listeners.add(listener);
         return () => this.listeners.delete(listener);
     }

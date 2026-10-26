@@ -324,7 +324,7 @@ for (const hit of hits) {
 
 **Syarat interaksi klik:**
 - Jarak drag mouse kurang dari 6px, sehingga gerakan kamera tidak dianggap sebagai klik.
-- Game tidak sedang dijeda atau menampilkan modal/win screen (`!isPaused()`).
+- State game sedang `playing` dan pointer terkunci (`gameState.getState() === 'playing'`).
 - Crosshair menunjuk objek yang dapat diinteraksikan.
 
 ### 4. State Machine
