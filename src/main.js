@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import FirstPersonController from './FirstPersonController.js';
 import GameStateManager from './GameStateManager.js';
+import worldState from './WorldState.js';
 import Room from './Room.js';
 import RoomObjects from './RoomObjects.js';
 import SolarSystem from './Orbit.js';
@@ -14,15 +15,6 @@ const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.inner
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild(renderer.domElement);
-
-// ── State permainan (FIX: sebelumnya tidak dideklarasikan) ──────────
-// Working on: WorldStateManager
-const state = {
-    foundCount: 0,      // jumlah lukisan yang sudah dibuka
-    hasKey: false,      // kunci sudah diambil
-    doorOpen: false,    // pintu sudah terbuka
-    chestOpened: false  // peti sudah dibuka
-};
 
 // Kode sandi = urutan angka lukisan idx 0,1,2 → '4','7','1'
 const PUZZLE_CODE = '471';
@@ -96,8 +88,8 @@ function isPaused() {
 function updateHUD() {
     // 1. Paintings objective
     const paintingsLi = document.getElementById('obj-paintings');
-    paintingsLi.textContent = `Cari Petunjuk Lukisan (${state.foundCount}/3)`;
-    if (state.foundCount >= 3) {
+    paintingsLi.textContent = `Cari Petunjuk Lukisan (${worldState.paintingsFound}/3)`;
+    if (worldState.paintingsFound >= 3) {
         paintingsLi.classList.add('done');
     } else {
         paintingsLi.classList.remove('done');
@@ -105,7 +97,7 @@ function updateHUD() {
 
     // 2. Key objective
     const keyLi = document.getElementById('obj-key');
-    if (state.hasKey) {
+    if (worldState.hasKey) {
         keyLi.classList.add('done');
     } else {
         keyLi.classList.remove('done');
@@ -113,7 +105,7 @@ function updateHUD() {
 
     // 3. Door objective
     const doorLi = document.getElementById('obj-door');
-    if (state.doorOpen) {
+    if (worldState.doorOpen) {
         doorLi.classList.add('done');
     } else {
         doorLi.classList.remove('done');
@@ -149,11 +141,11 @@ function revealPainting(painting) {
 
     if (!painting.userData.found) {
         painting.userData.found = true;
-        state.foundCount++;
+        worldState.paintingsFound++;
         const newTex = roomObjects.makeClueTexture(painting.userData.number, true);
         painting.userData.canvasMesh.material.map = newTex;
         painting.userData.canvasMesh.material.needsUpdate = true;
-        showToast(`🔍 Petunjuk #${state.foundCount} ditemukan: Angka '${painting.userData.number}'`);
+        showToast(`🔍 Petunjuk #${worldState.paintingsFound} ditemukan: Angka '${painting.userData.number}'`);
     } else {
         showToast('✓ Petunjuk sudah ditemukan');
     }
@@ -161,8 +153,8 @@ function revealPainting(painting) {
 }
 
 function openChest() {
-    if (!state.chestOpened) {
-        state.chestOpened = true;
+    if (!worldState.chestOpen) {
+        worldState.chestOpen = true;
         roomObjects.keyGroup.visible = true;
         if (roomVFX.sparkles) roomVFX.sparkles.visible = true;
         showToast('📦 Peti dibuka! Kunci terlihat.');
@@ -172,11 +164,11 @@ function openChest() {
 }
 
 function tryOpenDoor() {
-    if (!state.hasKey) {
+    if (!worldState.hasKey) {
         showToast('❌ Pintu terkunci! Butuh kunci.');
         return;
     }
-    if (state.doorOpen) {
+    if (worldState.doorOpen) {
         showToast('🚪 Pintu sudah terbuka!');
         return;
     }
@@ -192,7 +184,7 @@ function tryOpenDoor() {
 function attemptDoorCode() {
     const val = codeInput.value;
     if (val === PUZZLE_CODE) {
-        state.doorOpen = true;
+        worldState.doorOpen = true;
         codeModal.classList.add('hidden');
         showToast('🎉 Kode benar! Pintu terbuka. Silakan jalan keluar!');
     } else {
@@ -303,7 +295,7 @@ function animate(timestamp) {
     // ─── PHASE 7: ANIMATIONS ───────────────────────────────────────────────
 
     // 1. Chest lid open animation
-    if (state.chestOpened && chestProgress < 1) {
+    if (worldState.chestOpen && chestProgress < 1) {
         chestProgress = Math.min(1, chestProgress + delta * 2.2);
         const eased = 1 - Math.pow(1 - chestProgress, 3);
         if (roomObjects.lidHinge) {
@@ -312,7 +304,7 @@ function animate(timestamp) {
     }
 
     // 2. Door open animation & torch color transition (VFX #4)
-    if (state.doorOpen && doorProgress < 1) {
+    if (worldState.doorOpen && doorProgress < 1) {
         doorProgress = Math.min(1, doorProgress + delta * 1.1);
         const eased = 1 - Math.pow(1 - doorProgress, 3);
         if (roomObjects.doorPivot) {
@@ -327,7 +319,7 @@ function animate(timestamp) {
     }
 
     // Cek posisi pemain (kamera) melewati pintu atau belum (jika pintu sudah terbuka)
-    if (state.doorOpen && doorProgress >= 1) {
+    if (worldState.doorOpen && doorProgress >= 1) {
         if (camera.position.z < -8.0 && camera.position.x > -2.2 && camera.position.x < 0.2) {
             if (winScreen.classList.contains('hidden')) {
                 winScreen.classList.remove('hidden');
@@ -374,12 +366,12 @@ function animate(timestamp) {
     });
 
     // Update Room VFX (Dust & Sparkles)
-    roomVFX.update(delta, elapsed, state.chestOpened, state.hasKey);
+    roomVFX.update(delta, elapsed, worldState.chestOpen, worldState.hasKey);
 
     // ───────────────────────────────────────────────────────────────────────
 
     // 6D — Auto-collect Key
-    if (state.chestOpened && !state.hasKey) {
+    if (worldState.chestOpen && !worldState.hasKey) {
         keyCollectTracker(delta);
     }
 
@@ -399,7 +391,7 @@ function animate(timestamp) {
 function keyCollectTracker(delta) {
     keyCollectTimer += delta;
     if (keyCollectTimer > 1.6) {
-        state.hasKey = true;
+        worldState.hasKey = true;
         keyFading = true;
         showToast('🔑 Kunci didapat!');
         updateHUD();
