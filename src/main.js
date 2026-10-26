@@ -87,8 +87,9 @@ eclipsePuzzle.onSolved = () => {
 const fpsController = new FirstPersonController( camera, scene, renderer.domElement );
 fpsController.roomSize = room.size;
 
-// game state manager
-const gameState = new GameStateManager();
+window.addEventListener('beforeunload', (event) => {
+    fpsController.disable();
+})
 
 // Raycaster & Interaction setup (Phase 5 & 6)
 const raycaster = new THREE.Raycaster();
@@ -104,6 +105,8 @@ const codeModal = document.getElementById('code-modal');
 const codeInput = document.getElementById('code-input');
 const codeHintDisplay = document.getElementById('code-hint-display');
 const winScreen = document.getElementById('win-screen');
+
+const gameState = new GameStateManager();
 
 gameState.onChange((newState) => {
     if (newState === 'playing') {
@@ -228,7 +231,7 @@ function attemptDoorCode() {
     const val = codeInput.value;
     if (val === PUZZLE_CODE) {
         worldState.doorOpen = true;
-        gameState.setState('paused');
+        gameState.setState('playing');
         showToast('🎉 Kode benar! Pintu terbuka. Silakan jalan keluar!');
     } else {
         showToast('❌ Kode salah!');
@@ -288,7 +291,7 @@ window.addEventListener('mouseup', (e) => {
 // Modal wiring (Phase 9C)
 document.getElementById('submit-code').addEventListener('click', attemptDoorCode);
 document.getElementById('cancel-code').addEventListener('click', () => {
-    gameState.setState('paused');
+    gameState.setState('playing');
 });
 codeInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
