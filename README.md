@@ -2,19 +2,21 @@
 
 # 🚪 Escape Room 3D
 
-| Name           | NRP        | Kelas     |
+## 👥 Anggota Kelompok
+
+| Name           | NRP        | Kelas     | Kontribusi Utama |
 | ---            | ---        | ----------|
-| Joaquin Fairuz Nawfal Ismono | 5025241106 | B |
-| Hasan Abdurrahman | 5025241114 | B |
+| Joaquin Fairuz Nawfal Ismono | 5025241106 | B | Lighting, Shadow, Raycasting, VFX, UI/HUD, Integration, Animation |
+| Hasan Abdurrahman | 5025241114 | B | Scene, Camera, Game State, Puzzle, PBR, Interaction |
 
 ---
 
 ## 📋 Daftar Isi
 
+- [Anggota Kelompok](#-anggota-kelompok)
 - [Deskripsi Game](#-deskripsi-game)
 - [Objective](#-objective)
 - [Completion State](#-completion-state)
-- [Anggota Kelompok](#-anggota-kelompok)
 - [Cara Menjalankan](#-cara-menjalankan)
 - [Kontrol](#-kontrol)
 - [Alur Permainan](#️-alur-permainan)
@@ -22,10 +24,7 @@
 - [Struktur Proyek](#️-struktur-proyek)
 - [Detail Teknis](#-detail-teknis)
 - [Asset Credits](#-asset-credits)
-- [Checklist Demo](#-checklist-demo)
 - [Kendala & Solusi](#-kendala--solusi)
-- [Checklist Akhir](#-checklist-akhir)
-- [Lisensi](#-lisensi)
 
 ---
 
