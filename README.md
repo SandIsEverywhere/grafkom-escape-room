@@ -264,6 +264,8 @@ praktikum-uts/
 | Modul dan dependency | Import map melalui CDN, tanpa proses build |
 | Styling | CSS3, custom properties, Flexbox, dan CSS animation |
 
+Ruangan menggunakan material yang merespons pencahayaan dan menyediakan tekstur opsional untuk dinding serta lantai. Secara default tekstur dinonaktifkan (`null`), sehingga warna datar tetap digunakan. Untuk mengaktifkan tekstur, berikan path pada opsi `wallTexture` atau `floorTexture` saat membuat `Room`.
+
 ### 2. Scene Graph
 Struktur scene graph berikut menggambarkan hubungan parent-child pada objek utama.
 

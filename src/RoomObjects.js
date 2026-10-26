@@ -197,9 +197,14 @@ class RoomObjects {
             'models/model.glb',
             (gltf) => {
                 const model = gltf.scene;
-                model.position.set(-3.5, 0, 2.5);
-                model.scale.set(0.6, 0.6, 0.6);
-                model.rotation.y = Math.PI * 0.3;
+                model.position.set(0, 0, 2.5);
+                model.scale.setScalar(1.8);
+                model.rotation.y = -Math.PI / 2;
+                model.updateMatrixWorld(true);
+                const bounds = new THREE.Box3().setFromObject(model);
+                model.position.x += this.roomSize / 2 - 0.02 + bounds.min.x;
+                model.position.z += this.roomSize / 4;
+                model.position.y -= bounds.min.y;
                 model.traverse((child) => {
                     if (child.isMesh) {
                         child.castShadow = true;

@@ -16,6 +16,8 @@ const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.inner
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
 document.body.appendChild(renderer.domElement);
 
 // Kode sandi = urutan angka lukisan idx 0,1,2 → '4','7','1'
@@ -41,13 +43,16 @@ texLoader.load(
 );
 
 // Build Room (Phase 2 - OOP)
-const room = new Room(scene, 20, 4);
+const room = new Room(scene, 20, 5.5, {
+    wallTexture: null,
+    floorTexture: null
+});
 
 // Build Static Objects (Phase 4)
 const roomObjects = new RoomObjects(scene, room.size);
 
 // Build VFX (Phase 8)
-const roomVFX = new RoomVFX(scene, room.size, 4);
+const roomVFX = new RoomVFX(scene, room.size, room.height);
 
 // Puzzle objects are mounted beside their paintings; only the puzzles are interactive.
 const planetaryPuzzle = new PlanetaryOrderPuzzle();
@@ -374,7 +379,7 @@ function animate(timestamp) {
             } else if (hovered.root.userData.puzzleKind === 'eclipse' && hovered.target && hovered.target.userData.celestialName) {
                 hintText = `🌘 Objek Tata Surya: ${hovered.target.userData.celestialName} — ${hovered.root.userData.hint}`;
             } else if (hovered.root.userData.puzzleKind === 'simon' && hovered.target && hovered.target.userData.buttonName) {
-                hintText = `🎵 ${hovered.target.userData.buttonName} — ${hovered.root.userData.hint}`;
+                hintText = '';
             }
             hintEl.textContent = hintText;
         } else {

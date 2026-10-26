@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 
 class Room {
-    constructor(scene, size = 20, height = 4) {
+    constructor(scene, size = 20, height = 5.5, options = {}) {
         this.scene = scene;
         this.size = size;
         this.height = height;
+        this.options = options;
 
         // Dimensi jendela (dipakai buildRoom & buildWindowFrame)
         this.window = {
@@ -24,23 +25,32 @@ class Room {
         // ── Lantai ──
         const ground = new THREE.Mesh(
             new THREE.PlaneGeometry(this.size, this.size),
-            new THREE.MeshBasicMaterial({ color: 0x555555, side: THREE.DoubleSide })
+            new THREE.MeshStandardMaterial({
+                color: 0x555555,
+                map: this.loadTexture(this.options.floorTexture, 4),
+                roughness: 0.9,
+                side: THREE.DoubleSide
+            })
         );
         ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
         this.scene.add(ground);
 
         // ── Plafon ──
         const ceiling = new THREE.Mesh(
             new THREE.PlaneGeometry(this.size, this.size),
-            new THREE.MeshBasicMaterial({ color: 0x222222, side: THREE.DoubleSide })
+            new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.9, side: THREE.DoubleSide })
         );
         ceiling.position.y = this.height;
         ceiling.rotation.x = Math.PI / 2;
+        ceiling.receiveShadow = true;
         this.scene.add(ceiling);
 
-        // ── Dinding (material sama untuk semua) ──
-        const wallMaterial = new THREE.MeshBasicMaterial({
+        // Texture paths are optional; null keeps the room's flat-color materials.
+        const wallMaterial = new THREE.MeshStandardMaterial({
             color: 0x667788,
+            map: this.loadTexture(this.options.wallTexture, 4),
+            roughness: 0.9,
             side: THREE.DoubleSide
         });
 
@@ -52,6 +62,7 @@ class Room {
             wallMaterial
         );
         wallNorth.position.set(0, this.height / 2, -halfSize);
+        wallNorth.receiveShadow = true;
         wallsGroup.add(wallNorth);
 
         // West wall (-X) — utuh
@@ -61,12 +72,14 @@ class Room {
         );
         wallWest.position.set(-halfSize, this.height / 2, 0);
         wallWest.rotation.y = Math.PI / 2;
+        wallWest.receiveShadow = true;
         wallsGroup.add(wallWest);
 
         // South wall (+Z) — DENGAN LUBANG JENDELA
         const wallSouth = this.buildWallWithWindow(wallMaterial);
         wallSouth.position.set(0, 0, halfSize);
         wallSouth.rotation.y = Math.PI;
+        wallSouth.receiveShadow = true;
         wallsGroup.add(wallSouth);
 
         // East wall (+X) — utuh
@@ -76,9 +89,27 @@ class Room {
         );
         wallEast.position.set(halfSize, this.height / 2, 0);
         wallEast.rotation.y = -Math.PI / 2;
+        wallEast.receiveShadow = true;
         wallsGroup.add(wallEast);
 
         this.scene.add(wallsGroup);
+    }
+
+    loadTexture(path, repeat) {
+        if (!path) return null;
+
+        const texture = new THREE.TextureLoader().load(
+            path,
+            (loadedTexture) => {
+                loadedTexture.colorSpace = THREE.SRGBColorSpace;
+                loadedTexture.wrapS = THREE.RepeatWrapping;
+                loadedTexture.wrapT = THREE.RepeatWrapping;
+                loadedTexture.repeat.set(repeat, repeat);
+            },
+            undefined,
+            (error) => console.warn(`Room texture could not be loaded: ${path}`, error)
+        );
+        return texture;
     }
 
     // Bangun dinding dengan lubang persegi memakai THREE.Shape + Path (hole)
@@ -177,17 +208,34 @@ class Room {
     }
 
     buildLighting() {
-        // Ambient — sama seperti sebelumnya
-        this.scene.add(new THREE.AmbientLight(0xffffff, 2.0));
+        this.scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 
-        // Directional — sama seperti sebelumnya
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
         dirLight.position.set(5, 10, 5);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.set(1024, 1024);
         this.scene.add(dirLight);
 
-        // Point light tengah (tetap untuk flicker di animate)
-        this.pointLight = new THREE.PointLight(0xffaa50, 15, 30);
-        this.pointLight.position.set(0, this.height - 0.5, 0);
+        const fixture = new THREE.Mesh(
+            new THREE.BoxGeometry(1.4, 0.12, 0.5),
+            new THREE.MeshStandardMaterial({
+                color: 0xfff4d6,
+                emissive: 0xffd48a,
+                emissiveIntensity: 1.2,
+                roughness: 0.4
+            })
+        );
+        fixture.position.set(0, this.height - 0.08, 0);
+        this.scene.add(fixture);
+
+        this.ceilingLight = new THREE.PointLight(0xffedc2, 22, this.size * 1.8);
+        this.ceilingLight.position.set(0, this.height - 0.25, 0);
+        this.ceilingLight.castShadow = true;
+        this.ceilingLight.shadow.mapSize.set(1024, 1024);
+        this.scene.add(this.ceilingLight);
+
+        this.pointLight = new THREE.PointLight(0xffaa50, 1.8, 24);
+        this.pointLight.position.set(0, 2.5, 0);
         this.scene.add(this.pointLight);
 
         // NEW: cahaya hangat "dari luar" jendela
