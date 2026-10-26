@@ -5,15 +5,37 @@ class PlanetaryOrderPuzzle {
     constructor() {
         this.group = new THREE.Group();
 
+        const loader = new THREE.TextureLoader();
+        const loadSurface = (name) => {
+            const texture = loader.load(
+                `textures/${name}.jpg`,
+                undefined,
+                undefined,
+                (error) => console.error(`Failed to load planet texture: ${name}`, error)
+            );
+            texture.colorSpace = THREE.SRGBColorSpace;
+            return texture;
+        };
+        const surfaces = {
+            mercury: loadSurface('mercury'),
+            venus: loadSurface('venus'),
+            earth: loadSurface('earth'),
+            mars: loadSurface('mars'),
+            jupiter: loadSurface('jupiter'),
+            saturn: loadSurface('saturn'),
+            uranus: loadSurface('uranus'),
+            neptune: loadSurface('neptune'),
+        };
+
         this.planets = [
-            new Planet('Mercury', 0xaaaaaa, 0.17),
-            new Planet('Venus', 0xffcc66, 0.18),
-            new Planet('Earth', 0x3366ff, 0.18),
-            new Planet('Mars', 0xff5533, 0.18),
-            new Planet('Jupiter', 0xd6a56e, 0.24),
-            new Planet('Saturn', 0xe6d39b, 0.23),
-            new Planet('Uranus', 0x78d4d2, 0.22),
-            new Planet('Neptune', 0x3659c9, 0.22),
+            new Planet('Mercury', surfaces['mercury'], 0xaaaaaa, 0.17),
+            new Planet('Venus', surfaces['venus'], 0xffcc66, 0.18),
+            new Planet('Earth', surfaces['earth'], 0x3366ff, 0.18),
+            new Planet('Mars', surfaces['mars'], 0xff5533, 0.18),
+            new Planet('Jupiter', surfaces['jupiter'], 0xd6a56e, 0.24),
+            new Planet('Saturn', surfaces['saturn'], 0xe6d39b, 0.23),
+            new Planet('Uranus', surfaces['uranus'], 0x78d4d2, 0.22),
+            new Planet('Neptune', surfaces['neptune'], 0x3659c9, 0.22),
         ];
 
         this.correctOrder = [
