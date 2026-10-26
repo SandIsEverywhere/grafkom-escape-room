@@ -4,8 +4,10 @@ import GameStateManager from './GameStateManager.js';
 import worldState from './WorldState.js';
 import Room from './Room.js';
 import RoomObjects from './RoomObjects.js';
-import SolarSystem from './Orbit.js';
 import RoomVFX from './RoomVFX.js';
+import PlanetaryOrderPuzzle from './puzzles/PlanetaryOrderPuzzle.js';
+import SimonPuzzle from './puzzles/SimonPuzzle.js';
+import EclipsePuzzle from './puzzles/EclipsePuzzle.js';
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0x0b1020 );
@@ -47,8 +49,39 @@ const roomObjects = new RoomObjects(scene, room.size);
 // Build VFX (Phase 8)
 const roomVFX = new RoomVFX(scene, room.size, 4);
 
-// Build Solar System (Orbit Bumi, Bulan, Matahari)
-const solarSystem = new SolarSystem(scene);
+// Puzzle objects are mounted beside their paintings; only the puzzles are interactive.
+const planetaryPuzzle = new PlanetaryOrderPuzzle();
+planetaryPuzzle.group.position.set(-2.8, 2, -9.45);
+planetaryPuzzle.group.scale.setScalar(0.42);
+scene.add(planetaryPuzzle.group);
+roomObjects.interactables.push(planetaryPuzzle.group);
+
+const simonPuzzle = new SimonPuzzle();
+simonPuzzle.group.position.set(9.45, 2, 2);
+simonPuzzle.group.rotation.y = -Math.PI / 2;
+simonPuzzle.group.scale.setScalar(0.8);
+scene.add(simonPuzzle.group);
+roomObjects.interactables.push(simonPuzzle.group);
+
+const eclipsePuzzle = new EclipsePuzzle();
+eclipsePuzzle.group.position.set(-9.45, 2, 0.2);
+eclipsePuzzle.group.rotation.y = Math.PI / 2;
+eclipsePuzzle.group.scale.setScalar(0.32);
+scene.add(eclipsePuzzle.group);
+roomObjects.interactables.push(eclipsePuzzle.group);
+
+planetaryPuzzle.onSolved = () => {
+    worldState.puzzles.planetaryOrder = true;
+    revealPainting(roomObjects.paintings[0]);
+};
+simonPuzzle.onSolved = () => {
+    worldState.puzzles.simon = true;
+    revealPainting(roomObjects.paintings[1]);
+};
+eclipsePuzzle.onSolved = () => {
+    worldState.puzzles.eclipse = true;
+    revealPainting(roomObjects.paintings[2]);
+};
 
 // Using FirstPersonController
 const fpsController = new FirstPersonController( camera, scene, renderer.domElement );
@@ -152,23 +185,6 @@ function updateHUD() {
 
 // 6B — Handler Functions
 function revealPainting(painting) {
-    if (painting.userData.index === 2) {
-        const isPausedNow = solarSystem.togglePause();
-        
-        if (isPausedNow) {
-            const isAligned = solarSystem.checkEclipseAlignment();
-            if (isAligned) {
-                showToast('✨ Gerhana Sempurna! Petunjuk terbuka.');
-            } else {
-                showToast('⏸️ Orbit dipause. Posisi belum sejajar (gerhana)!');
-                return;
-            }
-        } else {
-            showToast('▶️ Orbit dilanjutkan.');
-            return;
-        }
-    }
-
     if (!painting.userData.found) {
         painting.userData.found = true;
         worldState.paintingsFound++;
@@ -222,14 +238,36 @@ function attemptDoorCode() {
     updateHUD();
 }
 
-function handleInteract(obj) {
-    if (!obj) return;
-    if (obj.userData.isPainting) {
-        revealPainting(obj);
-    } else if (obj.userData.isChest) {
+function handleInteract(interaction) {
+    if (!interaction) return;
+
+    const { root, target } = interaction;
+    if (root.userData.isChest) {
         openChest();
-    } else if (obj.userData.isDoor) {
+    } else if (root.userData.isDoor) {
         tryOpenDoor();
+    } else if (root.userData.isPuzzle) {
+        if (root.userData.puzzleKind === 'planetary-order') {
+            planetaryPuzzle.handleInput(target.userData.planetName);
+        } else if (root.userData.puzzleKind === 'simon') {
+            const buttonIndex = target.userData.buttonIndex;
+            if (simonPuzzle.state === 'idle') {
+                void simonPuzzle.start();
+                showToast('🎵 Perhatikan urutan cahaya!');
+            } else {
+                const wasInput = simonPuzzle.state === 'input';
+                void simonPuzzle.handleInput(buttonIndex).then(() => {
+                    if (wasInput && simonPuzzle.state === 'idle') {
+                        showToast('❌ Urutan salah. Klik tombol untuk mencoba lagi.');
+                    }
+                });
+            }
+        } else if (root.userData.puzzleKind === 'eclipse') {
+            const result = eclipsePuzzle.handleInput();
+            showToast(result === 'solved'
+                ? '✨ Gerhana sempurna! Petunjuk terbuka.'
+                : '🌘 Belum sejajar. Coba klik lagi saat Bulan berada di antara Matahari dan Bumi.');
+        }
     }
 }
 
@@ -266,7 +304,7 @@ document.getElementById('restart-btn').addEventListener('click', () => {
 function getInteractableRoot(hitObject) {
     let o = hitObject;
     while (o && o !== scene) {
-        if (o.userData && (o.userData.isDoor || o.userData.isChest || o.userData.isPainting)) {
+        if (o.userData && (o.userData.isDoor || o.userData.isChest || o.userData.isPuzzle)) {
             return o;
         }
         o = o.parent;
@@ -278,8 +316,10 @@ function detectHover() {
     raycaster.setFromCamera(screenCenter, camera);
     const hits = raycaster.intersectObjects(roomObjects.interactables, true);
     if (hits.length > 0) {
-        const root = getInteractableRoot(hits[0].object);
-        if (root) return root;
+        for (const hit of hits) {
+            const root = getInteractableRoot(hit.object);
+            if (root) return { root, target: hit.object };
+        }
     }
     return null;
 }
@@ -309,7 +349,7 @@ function animate(timestamp) {
         hovered = detectHover();
         if (hovered) {
             crosshairEl.classList.add('active');
-            hintEl.textContent = hovered.userData.hint || '';
+            hintEl.textContent = hovered.root.userData.hint || '';
         } else {
             crosshairEl.classList.remove('active');
             hintEl.textContent = '';
@@ -403,7 +443,7 @@ function animate(timestamp) {
     }
 
     // Update Solar System animation
-    solarSystem.update(delta);
+    eclipsePuzzle.update(delta);
 
     // 10B — Fallback Artifact animation (jika model.glb gagal dimuat dan memakai fallback)
     if (roomObjects.fallbackArtifact) {

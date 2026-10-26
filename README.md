@@ -218,7 +218,11 @@ praktikum-uts/
 │   ├── Room.js                # Kelas ruangan, lantai, atap, dinding, & lighting
 │   ├── RoomObjects.js         # Kelas objek statis (Pintu, Peti, Lukisan, Kunci)
 │   ├── RoomVFX.js             # Kelas partikel debu & sparkles
-│   ├── Orbit.js               # Kelas animasi orbit tata surya (gerhana puzzle)
+│   ├── puzzles/
+│   │   ├── PlanetaryOrderPuzzle.js
+│   │   ├── SimonPuzzle.js
+│   │   ├── EclipsePuzzle.js
+│   │   └── Orbit.js           # Komponen orbit untuk puzzle gerhana
 │   ├── FirstPersonController.js # Kontrol kamera FPS & WASD
 │   └── style.css              # Styling HUD, modal, toast, dan win screen
 │
@@ -235,9 +239,12 @@ praktikum-uts/
 | `index.html` | Struktur HTML, HUD, dan import map Three.js |
 | `src/main.js` | Game coordinator, state machine, raycasting, dan loop animasi |
 | `src/Room.js` | Kelas OOP untuk membangun ruangan, lantai, langit-langit, dan pencahayaan |
-| `src/RoomObjects.js` | Kelas OOP untuk objek interaktif (pintu, peti, lukisan, dan kunci) |
+| `src/RoomObjects.js` | Kelas OOP untuk objek ruangan; lukisan menampilkan petunjuk setelah puzzle terkait selesai |
 | `src/RoomVFX.js` | Kelas OOP untuk efek partikel debu dan sparkles |
-| `src/Orbit.js` | Kelas OOP untuk puzzle tata surya (orbit bumi, bulan, matahari & gerhana) |
+| `src/puzzles/PlanetaryOrderPuzzle.js` | Menyusun planet dengan menukar posisinya |
+| `src/puzzles/SimonPuzzle.js` | Mengulang urutan tombol bercahaya |
+| `src/puzzles/EclipsePuzzle.js` | Menghentikan orbit saat Bulan berada di antara Matahari dan Bumi |
+| `src/puzzles/Orbit.js` | Komponen orbit yang dipakai puzzle gerhana |
 | `src/FirstPersonController.js` | Kelas OOP untuk kontrol kamera FPS, PointerLock, dan pergerakan WASD |
 | `src/style.css` | Styling HUD, crosshair, modal, toast, dan win screen |
 | `models/model.glb` | Aset GLTF/GLB opsional; fallback tersedia |
@@ -317,7 +324,7 @@ for (const hit of hits) {
   const root = getInteractableRoot(hit.object);
 
   if (root) {
-    return root; // door, chest, atau painting
+    return root; // door, chest, atau puzzle
   }
 }
 ```

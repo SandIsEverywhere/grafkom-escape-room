@@ -302,24 +302,17 @@ class RoomObjects {
             canvasMesh.position.z = 0.06;
             paintingGroup.add(canvasMesh);
 
-            let hintText = `🖼️ Klik untuk memeriksa lukisan #${def.idx + 1}`;
-            if (def.idx === 2) {
-                hintText = `🌌 Klik untuk pause orbit, pastikan sejajar (gerhana)!`;
-            }
-
             paintingGroup.userData = {
                 isPainting: true,
                 index: def.idx,
                 number: def.num,
                 canvasMesh: canvasMesh,
                 texture: texture,
-                found: false,
-                hint: hintText
+                found: false
             };
 
             this.paintings.push(paintingGroup);
             this.scene.add(paintingGroup);
-            this.interactables.push(paintingGroup);
         });
     }
 }

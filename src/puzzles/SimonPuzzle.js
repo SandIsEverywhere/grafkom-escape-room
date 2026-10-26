@@ -1,17 +1,34 @@
+import * as THREE from 'three';
 import SimonButton from './SimonButton.js';
 
 class SimonPuzzle {
-    constructor(buttons) {
-        this.buttons = buttons;
+    constructor() {
+        this.group = new THREE.Group();
+
+        this.buttons = [
+            new SimonButton(0xff0000, new THREE.Vector3(-0.5, 0.5, 0)),
+            new SimonButton(0x00ff00, new THREE.Vector3(0.5, 0.5, 0)),
+            new SimonButton(0x0000ff, new THREE.Vector3(-0.5, -0.5, 0)),
+            new SimonButton(0xffff00, new THREE.Vector3(0.5, -0.5, 0)),
+        ];
+
+        this.buttons.forEach((button, index) => {
+            button.mesh.userData.buttonIndex = index;
+            this.group.add(button.mesh);
+        });
 
         this.sequence = [];
         this.playerSequence = [];
-
         this.round = 0;
         this.maxRounds = 4;
-
         this.state = 'idle';
         this.solved = false;
+        this.onSolved = null;
+        this.group.userData = {
+            isPuzzle: true,
+            puzzleKind: 'simon',
+            hint: '🎵 Klik tombol untuk memulai, lalu ulangi urutan cahayanya'
+        };
     }
 
     async start() {
@@ -83,13 +100,16 @@ class SimonPuzzle {
     complete() {
         this.state = 'solved';
         this.solved = true;
+        this.onSolved?.();
     }
 
     reset() {
+        this.buttons.forEach(button => button.dim());
         this.sequence = [];
         this.playerSequence = [];
         this.round = 0;
         this.state = 'idle';
+        this.solved = false;
     }
 
     wait(ms) {
