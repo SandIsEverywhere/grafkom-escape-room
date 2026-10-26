@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 
 class Planet {
-    constructor(name, color, radius = 0.3) {
+    constructor(name, texture, emissiveColor, radius = 0.3) {
         this.name = name;
 
         this.mesh = new THREE.Mesh(
             new THREE.SphereGeometry(radius, 32, 16),
             new THREE.MeshStandardMaterial({
-                color,
-                emissive: color,
+                map: texture,
+                emissive: emissiveColor,
                 emissiveIntensity: 0,
             })
         );
