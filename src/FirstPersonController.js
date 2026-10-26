@@ -6,10 +6,11 @@ class FirstPersonController {
         this.camera = camera;
         this.scene = scene;
         this.domElement = domElement;
-        this.model = null;
-        this.mixer = null;
-        this.animations = {};
-        this.currentAnimation = null;
+        // this.model = null;
+        // this.mixer = null;
+        // this.animations = {};
+        // this.currentAnimation = null;
+        this.enabled = true;
 
         // movement
         this.keys = { w: false, a: false, s: false, d: false };
@@ -21,23 +22,32 @@ class FirstPersonController {
         this.eyeLevel = 1.6;
         this.roomSize = 20;
 
-        this.initControls(domElement);
-        this.loadModel();
+        this.initControls();
+        // this.loadModel();
         this.addEventListeners();
     }
 
-    initControls(domElement) {
-        this.controls = new PointerLockControls(this.camera, domElement);
+    initControls() {
+        this.controls = new PointerLockControls(this.camera, this.domElement);
 
         // lock on click
-        domElement.addEventListener('click', () => {
-            this.controls.lock();
-        });
+        // this.domElement.addEventListener('click', () => {
+        //     this.controls.lock();
+        // });
     }
 
-    loadModel() {
-
+    enable() {
+        this.controls.lock();
+        this.enabled = true;
     }
+
+    disable() {
+        this.controls.unlock();
+        this.resetKeys();
+        this.enabled = false;
+    }
+
+    // loadModel() {}
 
     addEventListeners() {
         window.addEventListener('keydown', (event) => this.onKeyDown(event));
@@ -62,8 +72,12 @@ class FirstPersonController {
         }
     }
 
+    resetKeys() {
+        this.keys = { w: false, a: false, s: false, d: false };
+    }
+
     update(delta) {
-        if (!this.controls.isLocked) return;
+        if (!this.enabled) return;
 
         const speed = this.speed * delta;
 
