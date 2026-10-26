@@ -12,8 +12,10 @@ class SimonPuzzle {
             new SimonButton(0xffff00, new THREE.Vector3(0.5, -0.5, 0)),
         ];
 
+        const buttonNames = ['Tombol Merah', 'Tombol Hijau', 'Tombol Biru', 'Tombol Kuning'];
         this.buttons.forEach((button, index) => {
             button.mesh.userData.buttonIndex = index;
+            button.mesh.userData.buttonName = buttonNames[index];
             this.group.add(button.mesh);
         });
 

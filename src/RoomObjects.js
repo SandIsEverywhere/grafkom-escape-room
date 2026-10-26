@@ -271,9 +271,9 @@ class RoomObjects {
     buildPaintings() {
         const half = this.roomSize / 2 - 0.05;
         const paintingDefs = [
-            { pos: new THREE.Vector3(-6, 2, -half), rotY: 0, num: '4', idx: 0 },         // North wall left
-            { pos: new THREE.Vector3(half, 2, -2), rotY: -Math.PI / 2, num: '7', idx: 1 }, // East wall
-            { pos: new THREE.Vector3(-half, 2, 4), rotY: Math.PI / 2, num: '1', idx: 2 }   // West wall
+            { pos: new THREE.Vector3(-6, 2, -half), rotY: 0, num: '4', idx: 0, hint: "🪐 Tukar posisi planet hingga berurutan dari Matahari (Urutan dari kiri ke kanan)" },         // North wall left
+            { pos: new THREE.Vector3(half, 2, -2), rotY: -Math.PI / 2, num: '7', idx: 1, hint: "🎵 Klik tombol untuk memulai, lalu ulangi urutan cahayanya" }, // East wall
+            { pos: new THREE.Vector3(-half, 2, 4), rotY: Math.PI / 2, num: '1', idx: 2, hint:  "🌘 Klik sistem orbit saat Bulan sejajar di antara Matahari dan Bumi"  }   // West wall
         ];
 
         const frameMat = new THREE.MeshStandardMaterial({ color: 0x3d2314, roughness: 0.6 });
@@ -306,6 +306,7 @@ class RoomObjects {
                 isPainting: true,
                 index: def.idx,
                 number: def.num,
+                hint: def.hint,
                 canvasMesh: canvasMesh,
                 texture: texture,
                 found: false
@@ -313,6 +314,7 @@ class RoomObjects {
 
             this.paintings.push(paintingGroup);
             this.scene.add(paintingGroup);
+            this.interactables.push(paintingGroup);
         });
     }
 }

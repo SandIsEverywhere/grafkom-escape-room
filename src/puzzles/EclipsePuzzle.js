@@ -18,6 +18,7 @@ class EclipsePuzzle {
             new THREE.MeshBasicMaterial({ color: 0xffaa00 })
         );
         this.sun.userData.puzzleTarget = true;
+        this.sun.userData.celestialName = 'Matahari';
         this.group.add(this.sun);
 
         const sunLight = new THREE.PointLight(0xffaa00, 1.5, 10);
@@ -28,6 +29,7 @@ class EclipsePuzzle {
             new THREE.MeshStandardMaterial({ color: 0x2233ff, roughness: 0.5 })
         );
         this.earth.userData.puzzleTarget = true;
+        this.earth.userData.celestialName = 'Bumi';
         this.earthOrbit = new Orbit(this.group, this.earth, 3.5, 0.8);
 
         this.moon = new THREE.Mesh(
@@ -35,6 +37,7 @@ class EclipsePuzzle {
             new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.8 })
         );
         this.moon.userData.puzzleTarget = true;
+        this.moon.userData.celestialName = 'Bulan';
         this.moonOrbit = new Orbit(this.earth, this.moon, 0.8, 2.5);
     }
 
