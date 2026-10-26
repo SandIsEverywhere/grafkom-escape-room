@@ -396,7 +396,7 @@ Proyek ini dikembangkan dari awal dan tidak menggunakan template atau fork proye
 | Aset | Pembuat | Sumber | Lisensi |
 | :--- | :--- | :--- | :--- |
 | Three.js | Three.js Contributors | [threejs.org](https://threejs.org/) | MIT |
-| Environment HDR | Octavian Tudose | [Poly Haven](https://polyhaven.com/a/abandoned_hall_01) | CC0 |
+| Environment HDR | Octavian Tudose | [Poly Haven](https://polyhaven.com/a/kloppenheim_02_puresky) | CC0 |
 | Model GLB | Innerscene — original model | [Inner Scene](https://www.innerscene.com/tools/library/3d-parts/voyage-campaign-chest-1d609eb1) | CC0 |
 
 > ⚠️ **Perhatian:** Jika menggunakan `environment/environment.jpg` atau `models/model.glb`, cantumkan kredit lengkap berupa nama aset, pembuat, sumber, dan lisensi pada tabel di atas.
@@ -412,34 +412,6 @@ Proyek ini dikembangkan dari awal dan tidak menggunakan template atau fork proye
 
 ---
 
-## 🎥 Checklist Demo
-Video demo wajib menunjukkan fitur-fitur berikut:
-
-### Bagian Wajib
-- [ ] **Scene:** Tampilkan ruangan, lighting, shadow, dan fog.
-- [ ] **Interaction #1:** Klik lukisan hingga angka petunjuk muncul.
-- [ ] **Interaction #2:** Klik peti hingga animasi terbuka dan sparkles kunci terlihat.
-- [ ] **Interaction #3:** Klik pintu hingga modal kode muncul.
-- [ ] **Puzzle:** Tunjukkan petunjuk di HUD dan masukkan kode yang benar.
-- [ ] **Completion:** Tunjukkan pintu terbuka dan win screen.
-- [ ] **Kode salah:** Tunjukkan feedback ketika kode yang dimasukkan salah.
-
-### Bagian Grafika
-- [ ] PBR material: roughness, metalness, dan refleksi.
-- [ ] Multi-source lighting dan shadow.
-- [ ] Environment map.
-- [ ] Scene graph dan hubungan parent-child.
-- [ ] Animasi minimal dua jenis (misalnya chest lid dan door).
-- [ ] VFX minimal dua jenis (misalnya dust dan sparkles).
-- [ ] Raycasting dan alur deteksi interaksi.
-
-### Bagian Presentasi
-- [ ] Setiap anggota menjelaskan bagian yang dikerjakan.
-- [ ] Setiap anggota mampu menjelaskan konsep grafika yang digunakan.
-- [ ] Setiap anggota mampu menjelaskan kendala dan solusi yang diterapkan.
-
----
-
 ## 🧩 Kendala & Solusi
 
 | No. | Kendala | Solusi |
@@ -452,20 +424,5 @@ Video demo wajib menunjukkan fitur-fitur berikut:
 | 6 | Rotasi kamera terlalu sensitif | Mengalikan input mouse dengan 0.004 dan membatasi pitch. |
 | 7 | Pemain dapat menembus dinding | Membatasi posisi X/Z setiap frame. |
 | 8 | Asset atau texture diblokir melalui `file://` | Menjalankan proyek menggunakan local server. |
-
----
-
-## ✅ Checklist Akhir
-
-- [ ] Proyek berjalan tanpa error di console.
-- [ ] Tidak ada aset yang hilang tanpa fallback.
-- [ ] Semua interaksi berfungsi dengan benar.
-- [ ] Objective permainan jelas.
-- [ ] Completion state dan win screen berfungsi.
-- [ ] Shadow terlihat pada floor.
-- [ ] VFX dust dan sparkles berfungsi.
-- [ ] README lengkap dan sesuai implementasi.
-- [ ] Asset credits lengkap.
-- [ ] Proyek dikembangkan sendiri, bukan menggunakan template tanpa modifikasi.
 
 ---
