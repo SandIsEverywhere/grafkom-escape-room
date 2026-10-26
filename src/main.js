@@ -307,7 +307,7 @@ document.getElementById('restart-btn').addEventListener('click', () => {
 function getInteractableRoot(hitObject) {
     let o = hitObject;
     while (o && o !== scene) {
-        if (o.userData && (o.userData.isDoor || o.userData.isChest || o.userData.isPuzzle)) {
+        if (o.userData && (o.userData.isDoor || o.userData.isChest || o.userData.isPuzzle || o.userData.isPainting)) {
             return o;
         }
         o = o.parent;
@@ -352,7 +352,31 @@ function animate(timestamp) {
         hovered = detectHover();
         if (hovered) {
             crosshairEl.classList.add('active');
-            hintEl.textContent = hovered.root.userData.hint || '';
+            let hintText = hovered.root.userData.hint || '';
+            if (hovered.root.userData.isPainting) {
+                const data = hovered.root.userData;
+                const name = 'Lukisan';
+                if (data.found) {
+                    hintText = `🖼️ ${name} — Angka ${data.number} sudah ditemukan`;
+                } else {
+                    hintText = `${data.hint || '🖼️ Lukisan misterius'} — Dekati dan selesaikan puzzle terkait`;
+                }
+            } else if (hovered.root.userData.puzzleKind === 'planetary-order' && hovered.target && hovered.target.userData.planetName) {
+                const planetName = hovered.target.userData.planetName;
+                const selected = planetaryPuzzle.selectedPlanet ? planetaryPuzzle.selectedPlanet.name : null;
+                if (selected === planetName) {
+                    hintText = `🪐 Planet: ${planetName} (Dipilih - Klik planet lain untuk menukar)`;
+                } else if (selected) {
+                    hintText = `🪐 Planet: ${planetName} (Klik untuk menukar dengan ${selected})`;
+                } else {
+                    hintText = `🪐 Planet: ${planetName} (Klik untuk memilih)`;
+                }
+            } else if (hovered.root.userData.puzzleKind === 'eclipse' && hovered.target && hovered.target.userData.celestialName) {
+                hintText = `🌘 Objek Tata Surya: ${hovered.target.userData.celestialName} — ${hovered.root.userData.hint}`;
+            } else if (hovered.root.userData.puzzleKind === 'simon' && hovered.target && hovered.target.userData.buttonName) {
+                hintText = `🎵 ${hovered.target.userData.buttonName} — ${hovered.root.userData.hint}`;
+            }
+            hintEl.textContent = hintText;
         } else {
             crosshairEl.classList.remove('active');
             hintEl.textContent = '';
