@@ -1,4 +1,4 @@
-<div align="center">
+<div align="left">
 
 # 🚪 Escape Room 3D
 
@@ -399,6 +399,7 @@ Proyek ini dikembangkan dari awal dan tidak menggunakan template atau fork proye
 | Three.js | Three.js Contributors | [threejs.org](https://threejs.org/) | MIT |
 | Environment HDR | Octavian Tudose | [Poly Haven](https://polyhaven.com/a/kloppenheim_02_puresky) | CC0 |
 | Model GLB | Innerscene — original model | [Inner Scene](https://www.innerscene.com/tools/library/3d-parts/voyage-campaign-chest-1d609eb1) | CC0 |
+| Planet Texture | solarsystemscope | [solarsystemscope](https://www.solarsystemscope.com/textures/) | CC BY |
 
 > ⚠️ **Perhatian:** Jika menggunakan `environment/environment.jpg` atau `models/model.glb`, cantumkan kredit lengkap berupa nama aset, pembuat, sumber, dan lisensi pada tabel di atas.
 
@@ -407,7 +408,7 @@ Proyek ini dikembangkan dari awal dan tidak menggunakan template atau fork proye
 | :--- | :--- | :--- |
 | HDR Environment | [Poly Haven](https://polyhaven.com/) | CC0 |
 | Model 3D | [Sketchfab](https://sketchfab.com/) *(gunakan filter lisensi)* | Bervariasi (CC0, CC BY) |
-| Texture | [ambientCG](https://ambientcg.com/) | CC0 |
+| Texture | [ambientCG](https://ambientcg.com/) | CC0, CC BY |
 
 > *Penting: Periksa lisensi setiap aset secara individual sebelum digunakan dan cantumkan atribusi sesuai ketentuannya.*
 
