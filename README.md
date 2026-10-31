@@ -142,24 +142,21 @@ WIN SCREEN ✨
 
 ## ✨ Fitur Grafika
 
-### 1. Implementasi Requirement UTS
-| No. | Requirement | Status | Implementasi |
-| :---: | :--- | :---: | :--- |
-| 1 | Scene 3D, camera, dan renderer | ✅ | Room, PerspectiveCamera, WebGLRenderer |
-| 2 | Ground, arena, dan environment | ✅ | Floor, walls, ceiling, fog, environment map |
-| 3 | Minimal 3 jenis objek | ✅ | Lukisan, peti, pintu, kunci, dan 3 puzzle |
-| 4 | Scene graph hierarchy | ✅ | Door hinge, chest lid, painting group, puzzle |
-| 5 | Minimal 1 aset GLTF/GLB | ✅ | `models/model.glb` dengan fallback prosedural |
-| 6 | Material PBR | ✅ | Material berbasis `MeshStandardMaterial` |
-| 7 | Lighting | ✅ | Ambient, Point, dan Directional Light |
-| 8 | Shadow casting dan receiving | ✅ | Peti/pintu melakukan cast shadow; floor/walls menerima shadow |
-| 9 | Environment | ✅ | Equirectangular environment map dan FogExp2 |
-| 10 | Minimal 2 jenis animasi | ✅ | Tutup peti, pintu, kunci, sistem orbit gerhana, lukisan, partikel, dan perubahan cahaya |
-| 11 | Minimal 3 interaksi | ✅ | Klik lukisan, klik peti, klik pintu, dan pergerakan pemain |
-| 12 | `THREE.Raycaster` | ✅ | Hover detection dan click interaction |
-| 13 | Minimal 2 VFX | ✅ | Dust particles dan key sparkles |
-| 14 | UI/HUD | ✅ | Objectives, code hint, crosshair, modal, dan win screen |
-| 15 | Completion state | ✅ | Win screen setelah pintu terbuka |
+### 1. Fitur grafika
+| Fitur | Implementasi |
+| :--- | :--- |
+| Scene, kamera, dan renderer | Scene Three.js, `PerspectiveCamera`, dan `WebGLRenderer` dengan antialiasing |
+| Ruangan | Lantai, plafon, empat dinding, jendela, dan frame jendela |
+| Objek | Pintu, peti, kunci, tiga lukisan petunjuk, artefak, dan tiga puzzle |
+| Hierarki scene graph | Group untuk pintu dan pivot engsel, peti dan engsel tutup, lukisan, serta puzzle |
+| Aset 3D | `models/model.glb` dimuat dengan `GLTFLoader`; objek prosedural digunakan jika pemuatan gagal |
+| Material dan tekstur | Material `MeshStandardMaterial`; tekstur planet dimuat dari folder `textures/` |
+| Pencahayaan dan bayangan | Ambient, directional, dan point light; renderer mengaktifkan shadow map |
+| Environment | `environment/environment.jpg` sebagai equirectangular environment map; warna latar dan fog digunakan jika pemuatan gagal |
+| Animasi | Tutup peti, pintu, kunci, sistem orbit gerhana, lukisan, partikel, dan perubahan cahaya |
+| Interaksi | Gerak pemain, tiga puzzle, peti, pintu, modal kode, dan raycasting dari crosshair |
+| Efek visual | Partikel debu, sparkles kunci, emissive pulse, flicker point light, dan respons crosshair |
+| UI dan kondisi akhir | HUD objektif dan kode, toast, modal kode, serta win screen setelah pemain melewati pintu |
 
 ### 2. Animasi
 | No. | Animasi | Tipe |
